@@ -147,6 +147,10 @@ func (rds *RedisCfg) DelWithPattern(ctx context.Context, pattern string) error {
 			return err
 		}
 
+		if len(keys) == 0 {
+			break
+		}
+
 		err = rds.Conn.Del(ctx, keys...).Err()
 		if err != nil {
 			log.Println(err)
