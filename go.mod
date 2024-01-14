@@ -9,6 +9,7 @@ require (
 	github.com/nicksnyder/go-i18n v1.10.1
 	github.com/redis/go-redis/v9 v9.3.1
 	github.com/ttacon/libphonenumber v1.2.1
+	go.uber.org/mock v0.4.0
 	golang.org/x/crypto v0.17.0
 )
 
