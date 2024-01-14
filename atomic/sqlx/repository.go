@@ -6,25 +6,19 @@ import (
 
 	frsAtomic "github.com/Risuii/frs-lib/atomic"
 	"github.com/jmoiron/sqlx"
-
-	"go.opentelemetry.io/otel/trace"
 )
 
 type SqlxAtomicSessionProvider struct {
-	db    *sqlx.DB
-	trace trace.Tracer
+	db *sqlx.DB
 }
 
-func NewSqlxAtomicSessionProvider(db *sqlx.DB, tr trace.Tracer) *SqlxAtomicSessionProvider {
+func NewSqlxAtomicSessionProvider(db *sqlx.DB) *SqlxAtomicSessionProvider {
 	return &SqlxAtomicSessionProvider{
-		db:    db,
-		trace: tr,
+		db: db,
 	}
 }
 
 func (r *SqlxAtomicSessionProvider) BeginSession(ctx context.Context) (*frsAtomic.AtomicSessionContext, error) {
-	ctx, span := r.trace.Start(ctx, "SqlxAtomicSessionProvider/BeginSession")
-	defer span.End()
 
 	tx, err := r.db.BeginTxx(ctx, nil)
 	if err != nil {
@@ -32,6 +26,6 @@ func (r *SqlxAtomicSessionProvider) BeginSession(ctx context.Context) (*frsAtomi
 		return nil, err
 	}
 
-	atomicSession := NewAtomicSession(tx, r.trace)
+	atomicSession := NewAtomicSession(tx)
 	return frsAtomic.NewAtomicSessionContext(ctx, atomicSession), nil
 }

@@ -5,24 +5,19 @@ import (
 	"log"
 
 	"github.com/jmoiron/sqlx"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type SqlxAtomicSession struct {
-	tx    *sqlx.Tx
-	trace trace.Tracer
+	tx *sqlx.Tx
 }
 
-func NewAtomicSession(tx *sqlx.Tx, tr trace.Tracer) *SqlxAtomicSession {
+func NewAtomicSession(tx *sqlx.Tx) *SqlxAtomicSession {
 	return &SqlxAtomicSession{
-		tx:    tx,
-		trace: tr,
+		tx: tx,
 	}
 }
 
 func (s SqlxAtomicSession) Commit(ctx context.Context) error {
-	ctx, span := s.trace.Start(ctx, "SqlxAtomicSession/Commit")
-	defer span.End()
 
 	err := s.tx.Commit()
 	if err != nil {
@@ -32,8 +27,6 @@ func (s SqlxAtomicSession) Commit(ctx context.Context) error {
 }
 
 func (s SqlxAtomicSession) Rollback(ctx context.Context) error {
-	ctx, span := s.trace.Start(ctx, "SqlxAtomicSession/Rollback")
-	defer span.End()
 
 	err := s.tx.Rollback()
 	if err != nil {
